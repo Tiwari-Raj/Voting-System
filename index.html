@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page</title>
+    <style>
+        
+        body{
+            margin: 0%;
+            padding: 0%;
+        }
+        a{
+            text-decoration: none;
+        }
+
+        #header{
+            background-color: rgba(105, 176, 196, 0.653);
+            height: 80px;
+            width: 100%;
+            margin-top: 0%;
+            display: inline-flex;
+        }
+        #header img{
+            margin-left: 20px;
+        }
+        #header #buttons{     
+            border-radius: 5px;
+             padding: 5px;
+             margin-left: 80%;
+             margin-top: 20px;
+        }
+        #header #buttons button{
+            border-radius: 5px;
+            margin-left: 10px;
+            padding: 8px;
+            background-color: rgb(153, 193, 224);
+
+        }
+        #container img{
+            width: 100%;
+            max-height: 400px;
+
+        }
+        #content{
+            display: flex;
+        }
+        #content1{
+           margin-left: 20px;
+            height: auto;
+            width: 60%;
+            background-color: rgb(203, 213, 222);
+        }
+        #content11{
+            margin-left: 10px;
+        }
+        
+        #content2 {
+    margin-left: 10px;
+    height: 500px;
+    width: 35%;
+    background-color: rgb(203, 213, 222);
+}
+
+#content22 {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    padding: 20px;
+}
+
+#content22 #box1, #content22 #box2 {
+    height: 220px;
+    width: 250px;
+    background-color: rgb(203, 213, 222);
+    margin-bottom: 20px; 
+    border: 2px solid black;
+    border-radius: 5px; 
+}
+#content22 #box1 img, #content22 #box2 img {
+    margin-left: 50px;
+}
+
+#content22 #box1 div, #content22 #box2 div {
+    height: 50px;
+    background-color: rgb(205, 200, 195);
+}
+
+#content22 #box1 p, #content22 #box2 p {
+    padding: 20px;
+    margin-left: 60px;
+}
+
+        
+
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <img src="image/vote.png">
+        <div id="buttons">
+            <a href="login.html"><button>Login</button></a>
+            <a href="register.html"><button>Register</button></a>
+        </div>
+    </div>
+
+    <div id="container">    
+        <img src="image/banner.png">
+    </div>
+
+<div id="content">
+    <div id="content1">
+        <div id="content11">
+        <h3 style="margin-left: 40%;">How it Works! </h3> <hr>
+        <div style="display: flex;">
+            <div><img src="image/1.png"></div>
+            <div><h3>Set-Up Election</h3>
+                <p>Complete the process of registration.</p>
+                <li>Register as party.</li>
+                <li>Register as voter.</li></div>
+            
+        </div>
+        <div style="display: flex; margin-top: 30px;">
+            <div><img src="image/2.png" ></div>
+            <div><h3>Vote</h3>
+                <p>Your vote is your voice. By voting, you help shape the future and make a difference.<br>
+                    Every vote counts, so take action and be part of the change you want to see.</p></div>
+            
+        </div>
+        <div style="display: flex; margin-top: 30px;">
+            <div><img src="image/3.png"></div>
+            <div>
+            <h3>Set-Up Election</h3>
+            <p>After the election ends, on approval of election officer, the result can be generated which is<br>
+                automatically tabulated.The outcome can be published and shared with the voters on your eVote website.</p>
+            </div>
+        </div>
+        
+    </div>
+    </div>
+
+   <div id="content2">
+    <div id="content22">
+        <div id="box1">
+         <img src="image/party.png" height="150px" style="margin-left: 50px;">
+         <div style="height: 50px; background-color: rgb(205, 200, 195);">
+            <p style="padding:20px; margin-left:60px;">100+ Parties </p></div>
+        </div>
+        <div id="box2">
+            <img src="image/users.png" height="150px" style="margin-left: 50px;">
+            <div style="height: 50px; background-color: rgb(205, 200, 195);">
+               <p style="padding:20px; margin-left:60px;">1M+ Trusted Voter</p></div>
+           </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

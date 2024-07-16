@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+   
+    <style>
+        body{
+            margin: 0%;
+            padding: 0%;
+        }
+        #header{
+            background-color: rgba(105, 176, 196, 0.653);
+            height: 80px;
+            width: 100%;
+            margin-top: 0%;
+            display: inline-flex;
+        }
+        #header img{
+            margin-left: 20px;
+        }
+        #header #buttons{     
+            border-radius: 5px;
+             padding: 5px;
+             margin-left: 80%;
+             margin-top: 20px;
+        }
+        #header #buttons button{
+            border-radius: 5px;
+            margin-left: 10px;
+            padding: 8px;
+            background-color: rgb(153, 193, 224);
+
+        }
+    #container {
+        height: auto;
+        width: 300px;
+        border: 1vb black;
+        background-color: rgb(231, 228, 225);
+        margin-left: 40%;
+        font-size: large;
+        text-align: center;
+        border-radius: 5px;
+        
+    }
+    #container img{
+        padding-top: 30px;
+    }
+     input , select{
+        padding: 10px;
+        border-radius: 5px;
+    }
+    #container #register{
+        padding: 10px;
+        
+    }
+    button{
+        border-radius: 5px;
+        padding: 5px;
+        background-color: rgb(133, 199, 227);
+    }
+   
+    </style>
+
+
+</head>
+<body>
+    <div id="header">
+        <img src="image/vote.png">
+        <div id="buttons">
+            <a href="index.html"><button>Home</button></a>
+            <a href="register.html"><button>Register</button></a>
+        </div>
+    </div>
+    <form action="./api/login.php" method="post">
+    <div id="container">
+        <p id="img"><img src="image/login.png"></p>
+        <h2>Login </h2> <br>
+        <input type="text" name="adhar" placeholder="Enter Your Adhar"><br><br>
+        <input type="password" name="password" placeholder="Enter Password"><br><br>
+        
+        <select name="role"> 
+          <option value="voter">Voter</option>
+          <option value="party">Party</option>
+        </select><br><br>
+        <button>Login</button><br>
+        <p id="register">New User? <a href="register.html"><i>Register here</i></a></p>
+    </div>
+</form>
+
+
+</body>
+</html>

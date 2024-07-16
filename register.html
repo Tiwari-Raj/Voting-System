@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+
+
+    <style>
+        body{
+            margin: 0%;
+            padding: 0%;
+        }
+        #header{
+            background-color: rgba(105, 176, 196, 0.653);
+            height: 80px;
+            width: 100%;
+            margin-top: 0%;
+            display: inline-flex;
+        }
+        #header img{
+            margin-left: 20px;
+        }
+        #header #buttons{     
+            border-radius: 5px;
+             padding: 5px;
+             margin-left: 80%;
+             margin-top: 20px;
+        }
+        #header #buttons button{
+            border-radius: 5px;
+            margin-left: 10px;
+            padding: 8px;
+            background-color: rgb(153, 193, 224);
+
+        }
+        #container {
+        height: auto;
+        width: 400px;
+        border: 1vb black;
+        background-color: rgb(231, 228, 225);
+        margin-left: 40%;
+        font-size: large;
+        text-align: center;
+        border-radius: 5px;
+        
+    }
+    #container img{
+        padding-top: 30px;
+    }
+     input , select{
+        padding: 10px;
+        border-radius: 5px;
+    }
+    #container #bottom{
+        padding: 10px;
+    }
+    button{
+        border-radius: 5px;
+        padding: 5px;
+        background-color: rgb(110, 185, 175);
+    }
+   
+    </style>
+
+</head>
+<body>
+    <div id="header">
+        <img src="image/vote.png">
+        <div id="buttons">
+            <a href="index.html"><button>Home</button></a>
+            <a href="login.html"><button>Login</button></a>
+        </div>
+    </div>
+
+    <form action="api/register.php" method="post" enctype="multipart/form-data">
+        <div id="container">
+            <p id="img"><img src="image/register.png" alt="Register"></p>
+            <h2>Registration</h2>
+            <input type="text" name="name" placeholder="Enter Your Name"><br><br>
+            <input type="number" name="adhar" placeholder="Enter Your Adhar Number"><br><br>
+            <input type="password" name="password" placeholder="Enter Your Password"><br><br>
+            <input type="password" name="cpassword" placeholder="Confirm Your Password"><br><br>
+            <input type="text" name="address" placeholder="Enter Adrress"><br><br>
+            <label for="select">Select Category:</label>
+            <select id="select" name="role">
+                <option value="voter">Voter</option>
+                <option value="party">Party</option>
+            </select><br><br>
+            <div id="photo-input">
+                <input type="file" name="photo" style="margin-left: 40px;"><br><br>
+            </div>
+            <button type="submit">Register</button>
+            <p id="bottom">Already Registered! <a href="login.html"><i>login here</i></a></p>
+        </div>
+    </form>
+
+
+</body>
+</html>
