@@ -1,0 +1,300 @@
+Sub Main()
+    port = CreateObject("roMessagePort")
+    screen = CreateObject("roScreen")
+    screen.SetMessagePort(port)
+    screen.Clear(&h00000000)
+
+    font = CreateObject("roFontRegistry").GetDefaultFont()
+    playColor = &h80808080
+    quitColor = &h80808080
+    selectedColor = &h808080FF
+
+    selectedButton = "none"
+    
+    mainScreenActive = true
+    
+    mainScreen(screen, font, playColor, quitColor)
+    screen.Finish()
+
+    while true
+        msg = wait(0, port)
+        if type(msg) = "roUniversalControlEvent" and mainScreenActive
+            key = msg.GetInt()
+            if key = 2
+                playColor = selectedColor
+                quitColor = &h80808080
+                selectedButton = "play"
+            elseif key = 3
+                quitColor = selectedColor
+                playColor = &h80808080
+                selectedButton = "quit"
+            elseif key = 6
+                if selectedButton = "quit"
+                    QuitGame(screen)
+                elseif selectedButton = "play"
+                    mainScreenActive = false
+                    Play(screen, font, port)
+                    mainScreenActive = true
+                    playColor = &h80808080
+                    quitColor = &h80808080
+                    selectedButton = "none"
+                    mainScreen(screen, font, playColor, quitColor)
+                    screen.Finish()
+                end if
+            end if
+            
+            if mainScreenActive
+                mainScreen(screen, font, playColor, quitColor)
+                screen.Finish()
+            end if
+        end if
+    end while
+End Sub
+
+Sub mainScreen(screen as Object, font as Object, playColor as Integer, quitColor as Integer)
+    screen.Clear(&h00000000)
+    screen.DrawText("Half A Word", 530, 170, &hFFFFFFFF, font)
+    screen.DrawRect(540, 280, 200, 70, playColor)
+    screen.DrawText("Play", 600, 295, &hFFFFFFFF, font)
+    screen.DrawRect(540, 370, 200, 70, quitColor)
+    screen.DrawText("Quit", 600, 385, &hFFFFFFFF, font)
+    screen.SwapBuffers()
+End Sub
+
+Sub Play(screen As Object, font As Object, port As Object)
+    firstword = "JET"
+    secondword = "P C "
+    secondcompleteword = "PACK"
+    secondwordguess = ["A", "B", "C", "K", "L", "U", "M", "O"]
+    secondwordguessDisplay = secondwordguess
+    selectableIndices = []
+    underscoreSelectedIndex = 0
+    selectedIndex = 0
+    layer = 0
+    backSelectedIndex = False
+    hintSelectedIndex = False
+    gameWon = False
+
+    For i = 1 To Len(secondword)
+        If Mid(secondword, i, 1) = " " Then
+            selectableIndices.Push(i - 1)
+        End If
+    Next i
+
+    While True
+        ClearScreen(screen, &h00000000)
+        msg = Wait(0, port)
+
+        If Type(msg) = "roUniversalControlEvent" Then
+            If layer = 0 Then
+                result = HandleButtonSelection(msg, underscoreSelectedIndex, selectableIndices, backSelectedIndex, hintSelectedIndex)
+                underscoreSelectedIndex = result.underscoreSelectedIndex
+                backSelectedIndex = result.backSelectedIndex
+                hintSelectedIndex = result.hintSelectedIndex
+            ElseIf layer = 1 Then
+                selectedIndex = HandleLetterSelection(msg, selectedIndex, secondwordguessDisplay)
+            End If
+
+            DrawGameScreen(screen, font, firstword, secondword, secondwordguessDisplay, selectableIndices, underscoreSelectedIndex, selectedIndex, layer, backSelectedIndex, hintSelectedIndex)
+
+            If layer = 1 And msg.GetInt() = 6 Then
+                position = selectableIndices[underscoreSelectedIndex]
+                selectedLetter = secondwordguess[selectedIndex]
+
+                If Mid(secondcompleteword, position + 1, 1) = selectedLetter Then
+                    secondword = UpdateWord(secondword, selectedLetter, position)
+                    secondwordguessDisplay[selectedIndex] = ""
+
+                    If CheckWinCondition(secondword, secondcompleteword) Then
+                        gameWon = True
+                    End If
+
+                    selectableIndices.Delete(underscoreSelectedIndex)
+                    layer = 0
+                Else
+                    layer = 0
+                End If
+            ElseIf layer = 0 And msg.GetInt() = 6 Then
+                If backSelectedIndex Then
+                    Exit While
+                ElseIf hintSelectedIndex Then
+                    position = selectableIndices[underscoreSelectedIndex]
+                    selectedLetter = Mid(secondcompleteword, position + 1, 1)
+                    secondword = UpdateWord(secondword, selectedLetter, position)
+
+                    For j = 0 To secondwordguessDisplay.Count() - 1
+                        If secondwordguessDisplay[j] = selectedLetter Then
+                            secondwordguessDisplay[j] = ""
+                            Exit For
+                        End If
+                    Next j
+
+                    selectableIndices.Delete(underscoreSelectedIndex)
+
+                    If CheckWinCondition(secondword, secondcompleteword) Then
+                        gameWon = True
+                    End If
+
+                    layer = 0
+                Else
+                    layer = 1
+                End If
+            End If
+
+            If gameWon Then
+                DrawText(screen, "You Win!", 550, 650, &hFFFFFFFF, font)
+            End If
+
+            screen.SwapBuffers()
+        End If
+    End While
+End Sub
+
+Sub DrawGameScreen(screen As Object, font As Object, firstword As String, secondword As String, secondwordguessDisplay As Object, selectableIndices As Object, underscoreSelectedIndex As Integer, selectedIndex As Integer, layer As Integer, backSelectedIndex As Boolean, hintSelectedIndex As Boolean)
+    For i = 0 To 2
+        xPosition = 280 + (i * 100)
+        DrawBox(screen, xPosition, 190, 70, 70, &h80808080)
+        DrawText(screen, Mid(firstword, i + 1, 1), xPosition + 25, 205, &hFFFFFFFF, font)
+    Next i
+
+    positionsSecondWord = [650, 750, 850, 950]
+    DrawSelectableBoxes(screen, secondword, positionsSecondWord, font, layer, underscoreSelectedIndex, selectableIndices)
+
+    backBoxColor = &h80808080
+    If backSelectedIndex And layer = 0 Then
+        backBoxColor = &h808080FF
+    End If
+    DrawBox(screen, 70, 70, 150, 70, backBoxColor)
+    DrawText(screen, "Back", 105, 80, &hFFFFFFFF, font)
+
+    hintBoxColor = &h80808080
+    If hintSelectedIndex And layer = 0 Then
+        hintBoxColor = &h808080FF
+    End If
+    DrawBox(screen, 1060, 70, 150, 70, hintBoxColor)
+    DrawText(screen, "Hint", 1095, 80, &hFFFFFFFF, font)
+
+    For j = 0 To secondwordguessDisplay.Count() - 1
+        If secondwordguessDisplay[j] <> "" Then
+            If j < 4 Then
+                xPosition = 450 + (j * 100)
+                yPosition = 430
+            Else
+                xPosition = 450 + ((j - 4) * 100)
+                yPosition = 530
+            End If
+
+            If j = selectedIndex And layer = 1 Then
+                boxColor = &h808080FF
+            Else
+                boxColor = &h80808080
+            End If
+
+            DrawBox(screen, xPosition, yPosition, 70, 70, boxColor)
+            DrawText(screen, secondwordguessDisplay[j], xPosition + 25, yPosition + 15, &hFFFFFFFF, font)
+        End If
+    Next j
+End Sub
+
+Function HandleButtonSelection(msg As Object, underscoreSelectedIndex As Integer, selectableIndices As Object, backSelectedIndex As Boolean, hintSelectedIndex As Boolean) As Object
+    key = msg.GetInt()
+
+    if key = 4 then
+        if hintSelectedIndex then
+            hintSelectedIndex = false
+            backSelectedIndex = true
+        elseif backSelectedIndex then
+            backSelectedIndex = false
+            underscoreSelectedIndex = (underscoreSelectedIndex - 1 + selectableIndices.count()) mod selectableIndices.count()
+        elseif not backSelectedIndex and not hintSelectedIndex then
+            underscoreSelectedIndex = (underscoreSelectedIndex - 1 + selectableIndices.count()) mod selectableIndices.count()
+        end if
+
+    elseif key = 5 then
+        if backSelectedIndex then
+            backSelectedIndex = false
+            hintSelectedIndex = true
+        elseif not backSelectedIndex and not hintSelectedIndex then
+            underscoreSelectedIndex = (underscoreSelectedIndex + 1) mod selectableIndices.count()
+        end if
+
+    elseif key = 2 then
+        backSelectedIndex = true
+        hintSelectedIndex = false
+
+    elseif key = 3 then
+        if backSelectedIndex or hintSelectedIndex then
+            backSelectedIndex = false
+            hintSelectedIndex = false
+        end if
+    end if
+
+    return {underscoreSelectedIndex: underscoreSelectedIndex, backSelectedIndex: backSelectedIndex, hintSelectedIndex: hintSelectedIndex}
+end function
+
+Function HandleLetterSelection(msg As Object, selectedIndex As Integer, secondwordguessDisplay As Object) As Integer
+    if msg.GetInt() = 4 then
+        while true
+            selectedIndex = (selectedIndex - 1 + 8) mod 8
+            if secondwordguessDisplay[selectedIndex] <> "" then
+                exit while
+            end if
+        end while
+    elseif msg.GetInt() = 5 then
+        while true
+            selectedIndex = (selectedIndex + 1) mod 8
+            if secondwordguessDisplay[selectedIndex] <> "" then
+                exit while
+            end if
+        end while
+    elseif msg.GetInt() = 2 then
+        if selectedIndex >= 4 then
+            selectedIndex -= 4
+        end if
+    elseif msg.GetInt() = 3 then
+        if selectedIndex < 4 then
+            selectedIndex += 4
+        end if
+    end if
+    
+    return selectedIndex
+end function
+
+Function UpdateWord(secondword As String, selectedLetter As String, position As Integer) As String
+    Return Left(secondword, position) + selectedLetter + Mid(secondword, position + 2)
+End Function
+
+Function CheckWinCondition(secondword As String, secondcompleteword As String) As Boolean
+    Return secondword = secondcompleteword
+End Function
+
+Sub QuitGame(screen as Object)
+    screen.Close()
+    End
+End Sub
+
+Function ClearScreen(screen As Object, color As Integer)
+    screen.Clear(color)
+End Function
+
+Function DrawText(screen As Object, text As String, x As Integer, y As Integer, color As Integer, font As Object)
+    screen.DrawText(text, x, y, color, font)
+End Function
+
+Function DrawBox(screen As Object, x As Integer, y As Integer, width As Integer, height As Integer, color As Integer)
+    screen.DrawRect(x, y, width, height, color)
+End Function
+
+Function DrawSelectableBoxes(screen As Object, text As String, positions As Object, font As Object, layer As Integer, selectedIndex As Integer, selectableIndices As Object)
+    For i = 0 To Len(text) - 1
+        xPosition = positions[i]
+        If i = selectableIndices[selectedIndex] And layer = 0 Then
+            boxColor = &h808080FF
+        Else
+            boxColor = &h80808080
+        End If
+
+        DrawBox(screen, xPosition, 190, 70, 70, boxColor)
+        DrawText(screen, Mid(text, i+1, 1), xPosition + 25, 205, &hFFFFFFFF, font)
+    Next i
+End Function
